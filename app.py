@@ -1,6 +1,13 @@
 from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
+# Vercel 部署必须：将 app 导出为 application 供生产环境调用
+application = app 
+
+# 以下是原来的代码...
+from flask import Flask, render_template, request, jsonify
+
+app = Flask(__name__)
 
 
 @app.route('/')
