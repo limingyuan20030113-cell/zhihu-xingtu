@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智护星途 —— 打造国内首个特教家庭智慧服务平台</title>
+    <script>
+        window.addEventListener('unhandledrejection', function(event) {
+            if (event.reason && (event.reason.isFromCancelledTransition ||
+                (typeof event.reason === 'object' && event.reason.isFromCancelledTransition === true))) {
+                event.preventDefault();
+            }
+        });
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap');
+        body { font-family: 'Noto Sans SC', sans-serif; background-color: #fafcf2; }
+        .star-canvas {
+            background-image: radial-gradient(rgba(59, 130, 246, 0.06) 1.5px, transparent 0), radial-gradient(rgba(245, 158, 11, 0.04) 1.5px, transparent 0);
+            background-size: 32px 32px; background-position: 0 0, 16px 16px;
+        }
+        .active-nav { color: #1d4ed8 !important; border-bottom: 4px solid #1d4ed8; }
+        .logo-glow {
+            box-shadow: 0 0 35px -5px rgba(59, 130, 246, 0.4), 0 0 25px -5px rgba(245, 158, 11, 0.2);
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(59, 130, 246, 0.08);
+        }
+    </style>
+</head>
+<body class="star-canvas text-gray-800 min-h-screen flex flex-col justify-between"
+      x-data="{ currentTab: 'home', mobileMenu: false, chatOpen: false }">
+
+    <header class="sticky top-0 z-50 backdrop-blur-md bg-white/95 border-b border-blue-100 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" @click="currentTab = 'home'">
+                <div class="w-12 h-12 bg-gradient-to-tr from-blue-700 via-blue-600 to-amber-500 rounded-2xl flex items-center justify-center shadow-md logo-glow">
+                    <svg viewBox="0 0 100 100" class="w-8 h-8 text-white animate-pulse-slow">
+                        <path d="M20,75 C30,85 45,88 50,88 C55,88 70,85 80,75 C70,68 58,72 50,72 C42,72 30,68 20,75 Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+                        <polygon points="50,15 54,28 68,28 57,36 61,50 50,42 39,50 43,36 32,28 46,28" fill="#f59e0b"/>
+                        <circle cx="28" cy="45" r="3" fill="#fffbeb" class="animate-ping"/>
+                        <circle cx="72" cy="42" r="2.5" fill="#fffbeb"/>
+                        <path d="M42,65 Q50,52 50,42" fill="none" stroke="#fffbeb" stroke-width="3" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <span class="text-2xl font-black bg-gradient-to-r from-blue-700 to-amber-500 bg-clip-text text-transparent">智护星途</span>
+                    <span class="bg-amber-100 text-amber-800 text-xs font-black px-2.5 py-1 rounded-full ml-1 align-middle">民办非营利单位</span>
+                </div>
+            </div>
+
+            <nav class="hidden lg:flex items-center space-x-8 text-lg font-black text-gray-500 h-full">
+                <button @click="currentTab = 'home'" :class="currentTab == 'home' ? 'active-nav' : ''" class="hover:text-brand-blue h-20 px-2 transition-all">首页门户</button>
+                <button @click="currentTab = 'about'" :class="currentTab == 'about' ? 'active-nav' : ''" class="hover:text-brand-blue h-20 px-2 transition-all">痛点背景页</button>
+                <button @click="currentTab = 'services'" :class="currentTab == 'services' ? 'active-nav' : ''" class="hover:text-brand-blue h-20 px-2 transition-all">业务体系页</button>
+                <button @click="currentTab = 'iep'" :class="currentTab == 'iep' ? 'active-nav' : ''" class="hover:text-brand-blue h-20 px-2 text-blue-600 flex items-center transition-all"><i class="fa-solid fa-wand-magic-sparkles mr-1.5 animate-pulse"></i>AI智能测评页</button>
+                <button @click="currentTab = 'team'" :class="currentTab == 'team' ? 'active-nav' : ''" class="hover:text-brand-blue h-20 px-2 transition-all">名师团队页</button>
+            </nav>
+
+            <div class="flex items-center space-x-4">
+                <a href="https://wj.qq.com/s2/26958354/a95c/" target="_blank" class="hidden sm:inline-flex bg-blue-600 hover:bg-blue-700 text-white text-base font-black px-6 py-3.5 rounded-2xl shadow-lg transition-transform active:scale-95">
+                    <i class="fa-solid fa-file-signature mr-2 mt-0.5"></i> 家长免费申请
+                </a>
+                <button @click="mobileMenu = !mobileMenu" class="lg:hidden text-gray-600 p-2 rounded-xl bg-gray-50 border">
+                    <i class="fa-solid" :class="mobileMenu ? 'fa-xmark' : 'fa-bars'"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <div x-show="currentTab === 'home'" x-transition.opacity class="space-y-16">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center py-6">
+                <div class="lg:col-span-7 space-y-8">
+                    <span class="inline-block bg-blue-100 border border-blue-200 text-blue-900 px-5 py-2.5 rounded-full text-base font-black shadow-sm">
+                        <i class="fa-solid fa-graduation-cap mr-2 text-blue-700"></i> 淮北师范大学教育学院重点孵化成果
+                    </span>
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 leading-[1.3] tracking-tight">
+                        用专业驱散阴霾 <br>
+                        让 <span class="bg-gradient-to-r from-blue-600 to-amber-500 bg-clip-text text-transparent">“星星的宝贝”</span> 闪耀星空
+                    </h1>
+                    <p class="text-lg sm:text-xl text-gray-600 leading-loose">
+                        国内首个将<b>高等特教、心理学在校专业硕士研究生力量</b>与<b>有特殊需要的特教家庭</b>进行精密伴学匹配的公益平台。打破高额商业垄断，打造家庭一站式优质帮扶。
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-6 max-w-2xl pt-4">
+                        <a href="https://wj.qq.com/s2/26958354/a95c/" target="_blank" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center font-black py-4.5 rounded-2xl shadow-xl shadow-blue-200 text-lg flex items-center justify-center space-x-2 transition-transform hover:-translate-y-0.5">
+                            <i class="fa-solid fa-house-chimney-user"></i>
+                            <span>我是特教家长 · 申请免费伴学</span>
+                        </a>
+                        <a href="https://wj.qq.com/s2/26958589/b866/" target="_blank" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white text-center font-black py-4.5 rounded-2xl shadow-xl shadow-amber-200 text-lg flex items-center justify-center space-x-2 transition-transform hover:-translate-y-0.5">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                            <span>我是研究生 · 志愿者入驻</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="relative h-48 rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 border-4 border-slate-800 shadow-xl flex flex-col items-center justify-center p-4 group overflow-hidden">
+                        <div class="absolute -right-10 -top-10 w-32 h-32 bg-blue-500/10 rounded-full filter blur-2xl"></div>
+                        <div class="w-16 h-16 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl flex items-center justify-center shadow-inner mb-2">
+                            <svg viewBox="0 0 100 100" class="w-12 h-12 text-white">
+                                <path d="M15,75 C28,88 45,90 50,90 C55,90 72,88 85,75 C72,66 58,70 50,70 C42,70 28,66 15,75 Z" fill="none" stroke="url(#logoGrad)" stroke-width="4.5" stroke-linecap="round"/>
+                                <polygon points="50,12 55,26 70,26 58,35 63,49 50,40 37,49 42,35 30,26 45,26" fill="#f59e0b" filter="drop-shadow(0px 0px 8px rgba(245,158,11,0.8))"/>
+                                <defs>
+                                    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#3b82f6" />
+                                        <stop offset="100%" stop-color="#f59e0b" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </div>
+                        <div class="glass-panel text-gray-200 px-3 py-1 rounded-full text-xs font-black border border-white/5 shadow-md flex items-center space-x-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>
+                            <span class="tracking-widest">特殊教育星导航 · 让星星亮晶晶</span>
+                        </div>
+                    </div>
+
+                    <div class="relative h-56 rounded-[2rem] overflow-hidden border border-blue-100 shadow-md group">
+                        <img src="/static/images/home_focus.jpg"
+                             alt="[特教暖心康复伴学实景展示]" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                             onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg width%3D%22400%22 height%3D%22300%22 xmlns%3D%22http%3D%22www.w3.org/2000/svg%22%3E%3Crect width%3D%22100%25%22 height%3D%22100%25%22 fill%3D%22%23cbd5e1%22/%3E%3Ctext x%3D%2250%25%22 y%3D%2250%25%22 font-size%3D%2214%22 font-weight%3D%22bold%22 text-anchor%3D%22middle%22 fill%3D%22%23475569%22%3E[星孩1v1居家伴学本地照片区块]%3C/text%3E%3C/svg%3E'"/>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent flex items-end p-4">
+                            <span class="text-white text-sm font-bold bg-black/40 backdrop-blur-md px-3 py-1 rounded-lg"><i class="fa-solid fa-house-chimney-user mr-2 text-blue-400"></i>1v1 居家精准干预实况</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-r from-blue-50/40 via-white to-amber-50/30 p-8 border rounded-3xl grid grid-cols-1 md:grid-cols-3 gap-8 shadow-sm">
+                <div class="space-y-3">
+                    <h3 class="text-xl font-black text-gray-900 flex items-center"><i class="fa-solid fa-map-location-dot text-blue-600 mr-2"></i> 行业核心痛点？</h3>
+                    <p class="text-base text-gray-500 leading-relaxed">查阅目前特殊教育学校面临的严重城乡、机构倒挂瓶颈及因病致贫重担。</p>
+                    <button @click="currentTab = 'about'" class="text-base font-black text-blue-600 hover:text-blue-800 pt-1">点击进入痛点背景页 →</button>
+                </div>
+                <div class="space-y-3">
+                    <h3 class="text-xl font-black text-gray-900 flex items-center"><i class="fa-solid fa-network-wired text-amber-500 mr-2"></i> 平台业务架构？</h3>
+                    <p class="text-base text-gray-500 leading-relaxed">全方位解剖“针对儿童一站式居家教导”与“研究生志愿者常态闭环成长”双轨体系。</p>
+                    <button @click="currentTab = 'services'" class="text-base font-black text-amber-600 hover:text-amber-800 pt-1">点击进入业务体系页 →</button>
+                </div>
+                <div class="space-y-3">
+                    <h3 class="text-xl font-black text-gray-900 flex items-center"><i class="fa-solid fa-microchip text-purple-600 mr-2"></i> 本地智能测评？</h3>
+                    <p class="text-base text-gray-500 leading-relaxed">无API环境下闪电仿真响应！直接填写状况一键输出专家级1日居家个训规划。</p>
+                    <button @click="currentTab = 'iep'" class="text-base font-black text-purple-600 hover:text-purple-800 pt-1">点击进入AI智能测评页 →</button>
+                </div>
+            </div>
+        </div>
+
+
+        <div x-show="currentTab === 'about'" x-transition.opacity class="space-y-12">
+            <div class="text-left border-l-4 border-blue-600 pl-4 space-y-2">
+                <h2 class="text-3xl font-black text-gray-900">特殊教育行业痛点与社会宏观背景分析</h2>
+                <p class="text-xl text-gray-500">用数字化和志愿帮扶手段补足服务差、打破行业信息差。</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-4">
+                <div class="lg:col-span-8 bg-gradient-to-br from-slate-50 to-blue-50/40 p-8 sm:p-10 rounded-[2.5rem] border border-blue-100 flex flex-col justify-between space-y-6 shadow-sm">
+                    <div class="space-y-4">
+                        <div class="w-14 h-14 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+                            <i class="fa-solid fa-hand-holding-dollar"></i>
+                        </div>
+                        <h3 class="text-2xl sm:text-3xl font-black text-gray-900">市面传统商业化干预机构收费极端昂贵</h3>
+                        <p class="text-lg text-gray-600 leading-loose">
+                            传统针对孤独症、发育迟缓行为训练的商业机构收费高昂。特殊儿童需要高密度、长周期的干预，普通白领家庭面临巨大的经济错位。本平台坚守纯公益非营利属性，全流程提供0元帮扶。
+                        </p>
+                    </div>
+                    <div class="bg-white border-2 border-gray-100 p-5 rounded-2xl max-w-sm shadow-sm">
+                        <span class="text-sm text-gray-400 font-bold block uppercase tracking-wider">传统商业个训长效开销</span>
+                        <span class="text-4xl font-black text-rose-600 mt-1 block">¥ 100,000+ / 年</span>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-4 bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-sm flex flex-col justify-between group">
+                    <div class="relative h-64 overflow-hidden shrink-0">
+                        <img src="/static/images/pain_analysis.jpg"
+                             alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                             onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg width%3D%22400%22 height%3D%22300%22 xmlns%3D%22http%3D%22www.w3.org/2000/svg%22%3E%3Crect width%3D%22100%25%22 height%3D%22100%25%22 fill%3D%22%23e2e8f0%22/%3E%3Ctext x%3D%2250%25%22 y%3D%2250%25%22 font-size%3D%2214%22 font-weight%3D%22bold%22 text-anchor%3D%22middle%22 fill%3D%22%23475569%22%3E[行业城乡资源分布不均配图区块]%3C/text%3E%3C/svg%3E'"/>
+                        <div class="absolute inset-0 bg-black/20 flex items-start p-4">
+                            <span class="text-white text-xs font-bold bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-md"><i class="fa-solid fa-chart-pie mr-1"></i> 时空结构性严重错配</span>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-grow flex flex-col justify-between space-y-4">
+                        <h4 class="text-xl font-black text-gray-900">特教资源空间重度失衡</h4>
+                        <p class="text-base text-gray-500 leading-relaxed">
+                            大批顶尖教研专家、先进辅具长年高度堆砌在核心城市，乡村及下沉县城家庭常年遭遇早筛真空。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div x-show="currentTab === 'services'" x-transition.opacity class="space-y-12" x-data="{ serviceSubTab: 'parent' }">
+            <div class="text-left border-l-4 border-teal-600 pl-4 space-y-2">
+                <h2 class="text-3xl font-black text-gray-900">双轨融通：一站式智慧一站式帮扶业务矩阵</h2>
+                <p class="text-xl text-gray-500">点击下方子页标签查看大字号服务大纲及本地独立组图：</p>
+            </div>
+
+            <div class="flex space-x-6 border-b-2 border-gray-100 pb-2">
+                <button @click="serviceSubTab = 'parent'" :class="serviceSubTab === 'parent' ? 'text-blue-700 border-b-4 border-blue-700 font-black' : 'text-gray-400 font-bold'" class="px-4 py-3 text-lg transition-all">
+                    <i class="fa-solid fa-house-user mr-2"></i> 核心端：针对特教家庭的支持服务
+                </button>
+                <button @click="serviceSubTab = 'volunteer'" :class="serviceSubTab === 'volunteer' ? 'text-amber-600 border-b-4 border-amber-600 font-black' : 'text-gray-400 font-bold'" class="px-4 py-3 text-lg transition-all">
+                    <i class="fa-solid fa-user-graduate mr-2"></i> 赋能端：针对研究生志愿者能力成长
+                </button>
+            </div>
+
+            <div x-show="serviceSubTab === 'parent'" x-transition class="grid grid-cols-1 lg:grid-cols-12 gap-8 bg-gradient-to-br from-blue-700 to-blue-600 text-white rounded-[2.5rem] p-8 sm:p-12 shadow-xl items-center relative overflow-hidden">
+                <div class="lg:col-span-7 space-y-6 z-10">
+                    <h3 class="text-3xl font-black">纯公益提供全周期“居家个训伴学包”</h3>
+                    <ul class="space-y-6 text-base sm:text-lg text-blue-50 leading-loose">
+                        <li class="flex items-start space-x-3">
+                            <div class="w-7 h-7 rounded-full bg-amber-500 flex items-center justify-center text-white shrink-0 mt-1 shadow-sm"><i class="fa-solid fa-check text-sm"></i></div>
+                            <span><b>1v1精准定向伴学：</b>基于周期科目精准排课，指派通过高校岗前考核的研究生骨干提供居家个别化伴学。</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <div class="w-7 h-7 rounded-full bg-amber-500 flex items-center justify-center text-white shrink-0 mt-1 shadow-sm"><i class="fa-solid fa-check text-sm"></i></div>
+                            <span><b>定制IEP居家教案表：</b>依托高校特殊教育资源中心底卷科学建档，科学解构每日自理行为链。</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="lg:col-span-5 h-72 rounded-3xl overflow-hidden border-2 border-white/20 shadow-md hidden lg:block">
+                    <img src="/static/images/parent_support.jpg"
+                         alt="" class="w-full h-full object-cover"
+                         onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg width%3D%22400%22 height%3D%22300%22 xmlns%3D%22http%3D%22www.w3.org/2000/svg%22%3E%3Crect width%3D%22100%25%22 height%3D%22100%25%22 fill%3D%22%23cbd5e1%22/%3E%3Ctext x%3D%2250%25%22 y%3D%2250%25%22 font-size%3D%2214%22 font-weight%3D%22bold%22 text-anchor%3D%22middle%22 fill%3D%22%23475569%22%3E[家长同伴支持与关怀实景图区块]%3C/text%3E%3C/svg%3E'"/>
+                </div>
+            </div>
+
+            <div x-show="serviceSubTab === 'volunteer'" x-transition class="grid grid-cols-1 lg:grid-cols-12 gap-8 bg-gradient-to-br from-amber-500 to-amber-600 text-white rounded-[2.5rem] p-8 sm:p-12 shadow-xl items-center relative overflow-hidden">
+                <div class="lg:col-span-7 space-y-6 z-10">
+                    <h3 class="text-3xl font-black">卓越研究生师范生成长常态储备链</h3>
+                    <ul class="space-y-6 text-base sm:text-lg text-amber-50 leading-loose">
+                        <li class="flex items-start space-x-3">
+                            <div class="w-7 h-7 rounded-full bg-blue-700 flex items-center justify-center text-white shrink-0 mt-1 shadow-sm"><i class="fa-solid fa-check text-sm"></i></div>
+                            <span><b>提供真实且宝贵的伴学实践：</b>打破闭门造车，让研一、研二学子沉浸式下沉特教一线个案，搜集大创核心学术周志。</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <div class="w-7 h-7 rounded-full bg-blue-700 flex items-center justify-center text-white shrink-0 mt-1 shadow-sm"><i class="fa-solid fa-check text-sm"></i></div>
+                            <span><b>多学科硕导专家委员会严格把关：</b>志愿者的每堂教学设计与生活ADL反馈记录，均由高校正规博硕导进行严格修正批改。</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="lg:col-span-5 h-72 rounded-3xl overflow-hidden border-2 border-white/20 shadow-md hidden lg:block">
+                    <img src="/static/images/volunteer_growth.jpg"
+                         alt="" class="w-full h-full object-cover"
+                         onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg width%3D%22400%22 height%3D%22300%22 xmlns%3D%22http%3D%22www.w3.org/2000/svg%22%3E%3Crect width%3D%22100%25%22 height%3D%22100%25%22 fill%3D%22%23cbd5e1%22/%3E%3Ctext x%3D%2250%25%22 y%3D%2250%25%22 font-size%3D%2214%22 font-weight%3D%22bold%22 text-anchor%3D%22middle%22 fill%3D%22%23475569%22%3E[高校研讨实训场景图区块]%3C/text%3E%3C/svg%3E'"/>
+                </div>
+            </div>
+        </div>
+
+
+        <div x-show="currentTab === 'iep'" x-transition.opacity class="space-y-10">
+            <div class="text-left border-l-4 border-purple-600 pl-4 space-y-2">
+                <h2 class="text-3xl font-black text-gray-900">✨ 智护中枢 —— 智能IEP（个别化教育计划）深度评估系统</h2>
+                <p class="text-lg text-gray-500">此工作台已与 Python 后端连通。支持脱离网络API环境下的全闭环智能演示。</p>
+            </div>
+
+            <div class="glass-card rounded-[2.5rem] p-8 sm:p-10 shadow-xl border border-blue-100 max-w-4xl mx-auto"
+                 x-data="{
+                    condition: 'autism', age: '3-6', focus: 'communication', customBehavior: '',
+                    generating: false, result: false, iepOutput: '', errorMessage: '',
+                    async generatePlan() {
+                        this.generating = true; this.result = false; this.errorMessage = '';
+                        try {
+                            const response = await fetch('/api/gemini', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    prompt: `孩子特征：${this.condition}，年龄：${this.age}，干预目标：${this.focus}。行为细节：${this.customBehavior}。IEP`,
+                                    system_instruction: ''
+                                })
+                            });
+                            const data = await response.json();
+                            if(response.ok) { this.iepOutput = data.text; }
+                            else { this.errorMessage = data.error; }
+                        } catch (e) {
+                            this.errorMessage = '本地后端连接失败，请确认 PyCharm 中的 app.py 是否正成功开启。';
+                        } finally { this.generating = false; this.result = true; }
+                    }
+                 }">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div>
+                        <label class="block text-base font-black text-gray-700 mb-3">孩子临床主要症状表现：</label>
+                        <select x-model="condition" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-base font-bold focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all">
+                            <option value="autism">孤独症谱系特征 (自闭退缩与行为刻板倾向)</option>
+                            <option value="delay">智力发育迟缓表现 (大精细运动慢/协调不佳)</option>
+                            <option value="adhd">注意力缺陷多动障碍 (情绪多变冲动高敏)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-base font-black text-gray-700 mb-3">孩子的实际生理年龄段：</label>
+                        <select x-model="age" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-base font-bold focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all">
+                            <option value="0-3">0 - 3 岁 (黄金早期干预与早筛伴学)</option>
+                            <option value="3-6">3 - 6 岁 (学前期伴学及幼小衔接储备)</option>
+                            <option value="6-12">6 - 12 岁 (基础认知自理习惯塑造期)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-base font-black text-gray-700 mb-3">期望近期优先突破的指标：</label>
+                        <select x-model="focus" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-base font-bold focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all">
+                            <option value="communication">诱发主动对视、眼神追视及发音意图发声</option>
+                            <option value="social">社交互动行为场景建模与依恋契约建立</option>
+                            <option value="motor">手部精细动作抓捏、协调运动与自主勺食</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm sm:text-base font-black text-gray-700 mb-3">输入具体行为细节（定制居家教案的核心参考）：</label>
+                    <textarea x-model="customBehavior" rows="3" placeholder="请详细录入特征：例如反复旋转瓶盖、拒绝任何眼神应答、烦躁时疯狂锤打头部等行为症状..."
+                              class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 text-base focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all"></textarea>
+                </div>
+
+                <div class="text-center">
+                    <button @click="generatePlan" :disabled="generating" class="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-extrabold px-12 py-4.5 rounded-xl text-lg shadow-md disabled:opacity-50">
+                        <i class="fa-solid fa-microchip mr-2"></i>
+                        <span x-text="generating ? '智护后台数据模型组算中...' : '✨ 极速生成 AI 个别化居家 1日个训计划'"></span>
+                    </button>
+                </div>
+
+                <div x-show="generating" class="text-center py-8">
+                    <div class="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin inline-block"></div>
+                </div>
+
+                <div x-show="result" x-transition class="mt-8 bg-blue-50/40 border border-blue-100 rounded-2xl p-6 sm:p-8">
+                    <div class="flex items-center justify-between border-b border-blue-100 pb-3 mb-6">
+                        <h4 class="text-lg font-black text-blue-800 flex items-center">
+                            <i class="fa-solid fa-clipboard-check mr-2 text-emerald-500"></i>
+                            <span>个别化家庭康复服务计划 (IEP) · 智慧演练版</span>
+                        </h4>
+                        <span class="text-xs bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-black">本地测试数据正常吐数</span>
+                    </div>
+                    <div class="bg-white p-6 sm:p-10 rounded-2xl border shadow-inner text-base sm:text-lg text-gray-700 leading-loose space-y-6" x-html="iepOutput || errorMessage">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div x-show="currentTab === 'team'" x-transition.opacity class="space-y-12">
+            <div class="text-left border-l-4 border-amber-500 pl-4 space-y-2">
+                <h2 class="text-3xl font-black text-gray-900">高层次名师带教梯队与纯研究生联创团队</h2>
+                <p class="text-base text-gray-500">依靠重点高等师范院校教育学院专家力量，筑牢科学的干预技术底座。</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-gradient-to-b from-blue-50/30 to-white p-8 rounded-3xl border border-blue-100/50 space-y-4 shadow-sm">
+                    <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-xl font-black shadow-md">胡</div>
+                    <h3 class="text-xl font-black text-gray-900">胡学平 <span class="text-sm text-blue-600 font-bold ml-1">副教授 / 硕士点长</span></h3>
+                    <p class="text-xs sm:text-sm text-gray-400 font-bold">教育学院特殊教育硕士学位点点长 · 研导</p>
+                    <p class="text-sm sm:text-base text-gray-600 leading-loose pt-3 border-t border-gray-100">
+                        毕业于西南大学。聚焦特殊教育学、语言关联与神经加工认知。主持多项国家级及省级重点课题，发表权威论文30余篇。
+                    </p>
+                </div>
+
+                <div class="bg-gradient-to-b from-blue-50/30 to-white p-8 rounded-3xl border border-blue-100/50 space-y-4 shadow-sm">
+                    <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-xl font-black shadow-md">仰</div>
+                    <h3 class="text-xl font-black text-gray-900">仰丙灿 <span class="text-sm text-blue-600 font-bold ml-1">副教授 / 党委书记</span></h3>
+                    <p class="text-xs sm:text-sm text-gray-400 font-bold">教育学院党委书记 · 研导</p>
+                    <p class="text-sm sm:text-base text-gray-600 leading-loose pt-3 border-t border-gray-100">
+                        毕业于华东师范大学。曾斩获安徽省教学成果奖一等奖、省属教坛新秀等荣誉。主要负责大创监管、非营利合规审查。
+                    </p>
+                </div>
+
+                <div class="bg-gradient-to-b from-blue-50/30 to-white p-8 rounded-3xl border border-blue-100/50 space-y-4 shadow-sm">
+                    <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-xl font-black shadow-md">蔺</div>
+                    <h3 class="text-xl font-black text-gray-900">蔺红春 <span class="text-sm text-blue-600 font-bold ml-1">副教授 / 系主任</span></h3>
+                    <p class="text-xs sm:text-sm text-gray-400 font-bold">特殊教育系主任 · 研导</p>
+                    <p class="text-sm sm:text-base text-gray-600 leading-loose pt-3 border-t border-gray-100">
+                        毕业于山东师范大学。主持教育部人文社科项目、省级重点实践教育共建基金。全权把控并指导研究生志愿者上岗前的培训工作。
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200/60 rounded-3xl p-8">
+                <h3 class="text-lg font-black text-gray-900 mb-4"><i class="fa-solid fa-users-gear mr-2 text-slate-700"></i> 研究生联创核心成员名录：</h3>
+                <div class="flex flex-wrap gap-4 text-base font-bold text-gray-600 leading-loose">
+                    <span class="bg-white px-4 py-2 border rounded-xl shadow-sm"><b class="text-gray-900">宋嘉媛</b> (项目负责人·25级特教研·康复治疗学背景·全省技能大赛一等奖)</span>
+                    <span class="bg-white px-4 py-2 border rounded-xl shadow-sm"><b class="text-gray-900">胡新悦</b> (25级基心研·高中心理与语文双教师资格通关)</span>
+                    <span class="bg-white px-4 py-2 border rounded-xl shadow-sm"><b class="text-gray-900">谢楚丹</b> (25级应心研·主推资源整合·曾斩获省应用心理竞赛大奖)</span>
+                    <span class="bg-white px-4 py-2 border rounded-xl shadow-sm"><b class="text-gray-900">李明远</b> (25级应心研·掌握 Python / 机器学习及大数据生态研发)</span>
+                    <span class="bg-white px-4 py-2 border rounded-xl shadow-sm"><b class="text-gray-900">许洪娜</b> (23级应心研·高级心理健康资格·发表中国特殊教育学刊核心论文)</span>
+                    <span class="bg-white px-4 py-2 border rounded-xl shadow-sm"><b class="text-gray-900">严露</b> (23级特教研·斩获全国田家炳杯全日制教育硕士特殊教育技能大赛大奖)</span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-900 text-gray-400 py-12 text-center text-sm border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 space-y-4">
+            <p class="leading-relaxed text-base">© 2026 智护星途平台. 依托安徽省淮北市东山路100号 <b>淮北师范大学教育学院</b> 实验室及创客大创中心孵化研发.</p>
+            <p class="text-slate-600 text-xs">项目自造血盈余结余全额留存、非营利组织退出清算严格契合国家《民办非企业单位登记管理暂行条例》法规指引。</p>
+        </div>
+    </footer>
+
+    <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end" x-data="{
+        chatOpen: false, userInput: '', sending: false,
+        messages: [{ sender: 'bot', text: '您好！我是星小护🌟。已经完美为您召回了首页右侧的居家特教伴学图片视窗，形成了【高阶SVG展牌 + 温馨实景照片】的双层模块布局，视觉效果更完美啦！' }],
+        async sendMessage() {
+            if(!this.userInput.trim() || this.sending) return;
+            const textToSend = this.userInput;
+            this.messages.push({ sender: 'user', text: textToSend });
+            this.userInput = ''; this.sending = true;
+            try {
+                const response = await fetch('/api/gemini', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: textToSend, system_instruction: '' })
+                });
+                const data = await response.json();
+                this.messages.push({ sender: 'bot', text: data.text || data.error });
+            } catch(e) { this.messages.push({ sender: 'bot', text: '网络响应断开，请验证 PyCharm 下app.py是否正常运行中。' }); }
+            finally { this.sending = false; }
+        }
+    }">
+        <div x-show="chatOpen" class="bg-white w-[300px] sm:w-[350px] rounded-3xl border-2 shadow-2xl overflow-hidden mb-3">
+            <div class="bg-gradient-to-r from-blue-700 to-blue-600 text-white p-4 flex justify-between items-center">
+                <span class="text-sm font-black"><i class="fa-solid fa-robot mr-2"></i> 星小护 · AI 暖心助教</span>
+                <button @click="chatOpen = false"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4 h-56 overflow-y-auto space-y-3 bg-slate-50 text-sm leading-loose">
+                <template x-for="msg in messages">
+                    <div class="flex" :class="msg.sender === 'user' ? 'justify-end' : 'justify-start'">
+                        <div class="p-3 rounded-2xl max-w-[85%] shadow-sm" :class="msg.sender === 'user' ? 'bg-blue-600 text-white rounded-br-none' : 'bg-white text-gray-700 border border-slate-100 rounded-bl-none'">
+                            <span x-text="msg.text"></span>
+                        </div>
+                    </div>
+                </template>
+            </div>
+            <form @submit.prevent="sendMessage()" class="p-3 border-t bg-white flex gap-2">
+                <input x-model="userInput" type="text" placeholder="你可以问：平台收费吗？如何申请加入？" class="flex-grow bg-slate-50 border rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-400" />
+                <button type="submit" class="bg-blue-600 text-white text-xs font-black px-4 py-2 rounded-xl shrink-0">✨ 发送</button>
+            </form>
+        </div>
+        <button @click="chatOpen = !chatOpen" class="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-xl hover:bg-blue-700 transition-all">
+            <i class="fa-solid text-xl" :class="chatOpen ? 'fa-message-slash' : 'fa-headset'"></i>
+        </button>
+    </div>
+
+</body>
+</html>
